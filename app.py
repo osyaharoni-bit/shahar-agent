@@ -373,8 +373,9 @@ if __name__ == "__main__":
     print("  🌐  http://127.0.0.1:5000")
     print("━" * 52)
 
-   import os
+import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
