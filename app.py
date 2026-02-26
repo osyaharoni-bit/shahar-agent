@@ -71,7 +71,7 @@ async def _govmap_agent(city: str, street: str, number: str) -> dict:
 
         try:
             govmap_url = "https://www.govmap.gov.il/?c=210000,610000&z=0"
-            await page.goto(govmap_url, wait_until="domcontentloaded", timeout=30000)
+            await page.goto(govmap_url, wait_until="domcontentloaded", timeout=90000)
             await page.wait_for_timeout(3000)
 
             # חיפוש שדה כתובת
