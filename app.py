@@ -1,7 +1,7 @@
 import asyncio
 import os
 import re
-from urllib.parse import quote
+from urllib.parse import quote, urlparse # הוספנו את urlparse לפירוק הפרוקסי
 from flask import Flask, jsonify, request, send_from_directory
 from playwright.async_api import async_playwright
 
@@ -27,18 +27,40 @@ def logo():
     return "", 404
 
 # ════════════════════════════════════════════════════════════════
-#  PLAYWRIGHT AGENT — חילוץ גוש/חלקה מ-GOVMAP
+#  PLAYWRIGHT AGENT — חילוץ גוש/חלקה מ-GOVMAP (מעודכן עם פרוקסי)
 # ════════════════════════════════════════════════════════════════
 async def _govmap_agent(city: str, street: str, number: str) -> dict:
     address_q = f"{street} {number}, {city}".strip().strip(",")
     result = {"gush": None, "chelka": None, "address": address_q, "source": None, "error": None}
 
+    # 1. משיכת כתובת הפרוקסי מ-Render ופירוק שלה לפורמט ש-Playwright אוהב
+    proxy_url = os.environ.get('PROXY_URL')
+    playwright_proxy = None
+    
+    if proxy_url:
+        parsed_url = urlparse(proxy_url)
+        playwright_proxy = {
+            "server": f"{parsed_url.scheme}://{parsed_url.hostname}:{parsed_url.port}",
+            "username": parsed_url.username,
+            "password": parsed_url.password
+        }
+        print("מפעיל סוכן עם פרוקסי ישראלי:", playwright_proxy["server"])
+    else:
+        print("אזהרה: לא נמצא PROXY_URL בהגדרות השרת. מנסה לגלוש ללא פרוקסי.")
+
     async with async_playwright() as pw:
-        # ב-Render חייבים headless=True כי אין מסך
-        browser = await pw.chromium.launch(
-            headless=True,
-            args=["--disable-blink-features=AutomationControlled", "--no-sandbox"]
-        )
+        # 2. הגדרת פרמטרים להפעלת הדפדפן
+        launch_options = {
+            "headless": True,
+            "args": ["--disable-blink-features=AutomationControlled", "--no-sandbox"]
+        }
+        
+        # אם יש פרוקסי, נוסיף אותו להגדרות ההפעלה
+        if playwright_proxy:
+            launch_options["proxy"] = playwright_proxy
+
+        browser = await pw.chromium.launch(**launch_options)
+        
         context = await browser.new_context(
             viewport={"width": 1440, "height": 900},
             locale="he-IL",
