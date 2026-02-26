@@ -2,3 +2,4 @@ flask
 playwright
 playwright-stealth
 asyncio
+requests
