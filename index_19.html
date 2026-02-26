@@ -7,51 +7,147 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Alef:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
-  /* [כל ה-CSS המקורי שלך נשמר כאן במלואו] */
   :root { --brand: #1e3a5f; --brand-light: #2563eb; --accent: #f59e0b; --surface: #f8fafc; --card: #ffffff; --border: #e2e8f0; --text: #1e293b; --muted: #64748b; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; min-height: 100dvh; }
   body { font-family: 'Heebo', sans-serif; background: var(--surface); color: var(--text); direction: rtl; overflow-x: hidden; }
   #sidebar { width: 260px; min-height: 100dvh; background: linear-gradient(160deg, #0f2744 0%, #1e3a5f 60%, #1e4080 100%); display: flex; flex-direction: column; position: fixed; right: 0; top: 0; bottom: 0; z-index: 50; box-shadow: -4px 0 24px rgba(0,0,0,0.18); }
   .sidebar-logo { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-  #main { margin-right: 260px; min-height: 100dvh; padding: 32px 36px; }
+  .sidebar-logo h1 { font-family: 'Alef', sans-serif; font-size: 1.15rem; font-weight: 700; color: #fff; line-height: 1.3; }
+  .sidebar-logo p { font-size: 0.72rem; color: rgba(255,255,255,0.5); margin-top: 3px; letter-spacing: 0.04em; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; margin: 2px 8px; border-radius: 10px; cursor: pointer; color: rgba(255,255,255,0.65); font-size: 0.875rem; font-weight: 500; transition: all 0.18s ease; }
+  .nav-item.active { background: rgba(37,99,235,0.35); color: #fff; box-shadow: inset 3px 0 0 #f59e0b; }
+  #main { margin-right: 260px; min-height: 100dvh; padding: 32px 36px; padding-top: 88px !important; }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-  /* ... (שאר ה-CSS שלך) ... */
-  @media (max-width: 640px) { #main { margin-right: 0 !important; padding: 70px 12px 100px; } #sidebar { right: -290px; } #sidebar.open { right: 0; } }
+  .card-title { font-size: 1rem; font-weight: 700; color: var(--brand); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid #e8f0fe; display: flex; align-items: center; gap: 8px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
+  .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+  .form-group input { padding: 9px 13px; border: 1.5px solid var(--border); border-radius: 9px; width: 100%; }
+  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 20px; border-radius: 9px; font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; }
+  .btn-primary { background: var(--brand-light); color: #fff; }
+  #global-header { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: #fff; border-bottom: 1.5px solid #e2e8f0; z-index: 150; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+  .gh-brand { display: flex; align-items: center; gap: 12px; }
+  .gh-logo { width: 40px; height: 40px; border-radius: 8px; }
+  .gh-name { font-weight: 700; color: var(--brand); font-size: 1.05rem; }
+  .gh-name span { display: block; font-size: .62rem; font-weight: 400; color: var(--muted); }
+  @media (max-width: 640px) { #main { margin-right: 0 !important; padding: 70px 12px 100px !important; } #sidebar { right: -290px; } }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(37,99,235,0.3); border-top-color: #2563eb; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACPfmFETktrWV4KNI-d8M9MB-ScD-L67Y&libraries=places,geometry"></script>
 </head>
 <body>
 
 <header id="global-header">
   <div class="gh-brand">
-    <img src="logo.png" alt="Logo" class="gh-logo h-10 w-auto" onerror="this.style.display='none'"/>
+    <img src="logo.png" alt="Logo" class="gh-logo" onerror="this.style.display='none'"/>
     <div class="gh-name">LegalFlow OS<span>Aharoni Legal Platform</span></div>
   </div>
-  <div class="gh-tagline">⚖️ מערכת ניהול עסקאות נדל"ן — מיסוי · מימון · הגנות משפטיות</div>
-  <div class="gh-actions"><span class="gh-version">v2.0 AI</span><button class="gh-dash-btn" onclick="showDashboard()">כל התיקים</button></div>
+  <div style="font-size: .72rem; color: var(--muted); font-weight: 500;">⚖️ מערכת ניהול עסקאות נדל"ן</div>
+  <div><span style="font-size: .62rem; font-weight: 700; color: #1e40af; background: #eff6ff; padding: 3px 10px; border-radius: 99px;">v2.0 AI</span></div>
 </header>
 
 <nav id="sidebar">
-  <div class="sidebar-logo"><h1>LegalFlow OS</h1><p>AHARONI LEGAL</p></div>
-  <div class="nav-item active" onclick="switchTab('onboarding')" id="nav-onboarding">📋 פתיחת תיק</div>
-  <div class="nav-item" onclick="switchTab('planning')" id="nav-planning">🗺️ תכנון</div>
-  <div class="nav-item" onclick="switchTab('finance')" id="nav-finance">🏦 מימון</div>
-  <div class="nav-item" onclick="switchTab('tax')" id="nav-tax">🧮 מיסוי</div>
-  <div class="nav-item" onclick="switchTab('deadlines')" id="nav-deadlines">📅 מועדים</div>
-  <div class="nav-item" onclick="switchTab('legal')" id="nav-legal">🛡️ משפטי</div>
-  <div class="nav-item" onclick="switchTab('docs')" id="nav-docs">📁 מסמכים</div>
-  <div class="sidebar-footer"><div class="status-pill"><div class="dot dot-red"></div><div id="fee-status-txt">שכ״ט לא נחתם</div></div></div>
+  <div class="sidebar-logo">
+    <h1>LegalFlow OS</h1>
+    <p>AHARONI LEGAL PLATFORM</p>
+  </div>
+  <div style="padding: 16px 12px 8px; font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.35); text-transform: uppercase;">מודולים</div>
+  <div class="nav-item active">📋 פתיחת תיק</div>
+  <div class="nav-item">🗺️ תכנון וקניין</div>
+  <div class="nav-item">🏦 מימון</div>
+  <div class="nav-item">🧮 מיסוי</div>
 </nav>
 
 <main id="main">
-  <div id="tab-onboarding" class="tab-view">
+  <div id="tab-onboarding">
     <div class="card">
-      <div class="card-title">👤 פרטי לקוח ועסקה</div>
-      <div class="form-group"><label>עיר</label><input type="text" id="propCity" placeholder="תל אביב"></div>
-      <div class="form-group"><label>רחוב</label><input type="text" id="propStreet" placeholder="הרצל"></div>
-      <div class="form-group"><label>מספר</label><input type="text" id="propNumber" placeholder="1"></div>
-      <button class="btn btn-primary mt-4" onclick="agentFetchGushChelka()" id="agent-btn">🔍 איתור גוש חלקה</button>
-      <div id="gis-status" class="gis-status"></div>
+      <div class="card-title">👤 איתור גוש וחלקה (GovMap Agent)</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+        <div class="form-group">
+          <label>עיר</label>
+          <input type="text" id="propCity" placeholder="למשל: תל אביב">
+        </div>
+        <div class="form-group">
+          <label>רחוב</label>
+          <input type="text" id="propStreet" placeholder="למשל: הרצל">
+        </div>
+        <div class="form-group">
+          <label>מספר בית</label>
+          <input type="text" id="propNumber" placeholder="1">
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="agentFetchGushChelka()" id="agent-btn" style="margin-top: 10px;">
+        🔍 הפעל סוכן איתור
+      </button>
+      
+      <div id="gis-status" style="margin-top: 15px; font-size: 0.85rem; min-height: 24px;">
+        הזן כתובת ולחץ על הכפתור לאיתור אוטומטי ב-GovMap.
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+        <div class="form-group">
+          <label>גוש</label>
+          <input type="text" id="propGush" readonly style="background: #f8fafc;">
+        </div>
+        <div class="form-group">
+          <label>חלקה</label>
+          <input type="text" id="propChelka" readonly style="background: #f8fafc;">
+        </div>
+      </div>
     </div>
   </div>
+</main>
+
+<script>
+async function agentFetchGushChelka() {
+  const city = document.getElementById('propCity').value.trim();
+  const street = document.getElementById('propStreet').value.trim();
+  const number = document.getElementById('propNumber').value.trim();
+  const statusEl = document.getElementById('gis-status');
+  const btn = document.getElementById('agent-btn');
+
+  if (!city || !street) {
+    statusEl.innerHTML = '<span style="color:#d97706;">⚠️ נא למלא עיר ורחוב</span>';
+    return;
+  }
+
+  btn.disabled = true;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span> מחפש...';
+  statusEl.innerHTML = '🤖 הסוכן מתחבר ל-GovMap...';
+
+  try {
+    // שימוש בנתיב יחסי עבור השרת ב-Render
+    const res = await fetch('/api/govmap', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ city, street, number }),
+    });
+
+    if (!res.ok) throw new Error('שרת לא זמין');
+
+    const data = await res.json();
+
+    if (data.gush && data.chelka) {
+      document.getElementById('propGush').value = data.gush;
+      document.getElementById('propChelka').value = data.chelka;
+      statusEl.innerHTML = `<span style="color:#16a34a; font-weight:700;">✅ נמצאו נתונים! (מקור: ${data.source})</span>`;
+    } else {
+      statusEl.innerHTML = `<span style="color:#dc2626;">❌ ${data.error || 'לא נמצאו נתונים לכתובת זו'}</span>`;
+    }
+  } catch (err) {
+    statusEl.innerHTML = '<span style="color:#dc2626;">❌ שגיאת חיבור לשרת ה-Agent</span>';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+</script>
+
+<footer style="text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; border-top: 1.5px solid #e2e8f0;">
+  ⚖️ LegalFlow OS · פותח עבור עו"ד שחר אהרוני · © 2024
+</footer>
+
+</body>
+</html>
